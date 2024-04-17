@@ -10,4 +10,6 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+1. fypbjchina   Yiping Fu   I'm in the first place ^_^
+
+None yet. Why not be the next?
