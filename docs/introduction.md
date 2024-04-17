@@ -12,7 +12,7 @@ To initiate the installation of Datasurfer, execute the following command:
 
 Before diving into data harnessing with Datasurfer, let's first create some data files in various formats.
 
-´
+`
 import numpy as np
 import pandas as pd
 import json
@@ -35,4 +35,4 @@ data2.to_excel(dir_data / 'data2.xlsx', index=False)
 # Create a json file
 data3 = pd.DataFrame(np.random.rand(5, 3), index=list('cdefg'))
 json.dump(data3.to_dict(), open(dir_data / 'data3.json', 'w'),  indent=4)
-´
+`
