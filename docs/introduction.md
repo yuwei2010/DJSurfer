@@ -1,6 +1,6 @@
-# Welcome to the Datasurfer Tutorial
+# Welcome to Datasurfer
 
-In this tutorial, you'll gain a rapid insight of Datasurfer, covering installation, building your initial data pool, searching for certain data, and visualizing it.
+In this chapter, you'll gain a rapid insight of Datasurfer, covering installation, building your initial data pool, searching for certain data, and visualizing it.
 
 ## Install Datasurfer
 
@@ -36,3 +36,65 @@ data2.to_excel(dir_data / 'data2.xlsx', index=False)
 data3 = pd.DataFrame(np.random.rand(5, 3), index=list('cdefg'))
 json.dump(data3.to_dict(), open(dir_data / 'data3.json', 'w'),  indent=4)
 ```
+
+## Data Pool
+
+### Create a Data Pool Object by Path
+We've now generated three files within the "demo_data" directory, each has different file types, varying data sizes, and unequal column names.
+
+In the next step, We will create a data pool object to organize and contain these files.
+
+```python
+import datasurfer as ds
+
+# Create a DataSurfer object by giving the path of the data files
+dp = ds.Data_Pool("demo_data")
+
+# display all information of the data pool 
+dp.describe(verbose=True)
+```
+
+### List Signal Names in the Pool
+The data pool description provides details on the three files we've created, including signals, file types, sizes, and more. Using the following command, you can view all the signal names stored in the data pool:
+
+```python
+# list all pool signals
+
+dp.list_signals()
+```
+
+### Retrieve Single Signal from Pool
+
+The Pool returns values from files within the pool, presenting them as a pandas DataFrame. To achieve data length alignment, empty spaces will be filled with 'NaN'.
+
+```python
+# Obtain signal "c" from pool files
+df = dp['c']
+
+df
+```
+
+### Retrieve multiple signals from Pool
+
+The Pool can also return multiple signals at once. The signals can be specified by a list of signal names:
+
+```python
+
+# Depresse warning messages
+import warnings
+warnings.filterwarnings("ignore")
+
+# Return a DataFrame containing signals 'b' and 'c'; non-existent values will be filled with NaN.
+df = dp[['b', 'c']]
+df
+```
+
+### Visualize data in the pool
+
+You can also plot the data in the pool directly. The following code will satter pool signals:
+
+```python
+# Scatter signal "c" and "d" and set the axis labels
+dp.plot.scatter('c', 'd', setax=True);
+```
+
