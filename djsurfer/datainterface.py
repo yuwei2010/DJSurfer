@@ -10,6 +10,8 @@ class DataInterface(ABC):
         self.name = name
         self.comment = comment
         self.config = config
+        self.df = self.get_df()
+        
         
     @abstractmethod
     def get_df(self):
