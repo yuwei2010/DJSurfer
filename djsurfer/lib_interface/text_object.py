@@ -13,8 +13,9 @@ class TEXT_OBJECT(DataInterface):
         comment (str, optional): Any additional comment about the text object. Defaults to None.
     """
 
-    def __init__(self, path, name=None, comment=None):
+    def __init__(self, path, name=None, comment=None, delimiter=','):
         super().__init__(path, name, comment)
+        self.delimiter = delimiter
         
     def get_df(self):
         """
@@ -26,7 +27,7 @@ class TEXT_OBJECT(DataInterface):
         with open(self.path, 'r') as f:
             data = f.readlines()
         
-        df = pd.DataFrame([l.strip().split(',') for l in data[1:]], columns=data[0].strip().split(','))
+        df = pd.DataFrame([l.strip().split(self.delimiter) for l in data[1:]], columns=data[0].strip().split(self.delimiter))
         
         return df
         
