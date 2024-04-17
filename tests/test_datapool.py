@@ -25,6 +25,7 @@ def dir_data():
     df.to_csv(dir / 'data1.txt', index=False)    
 
     return str(dir)
+
 #%%
 def test_textobject(dir_data):
     
@@ -37,6 +38,7 @@ def test_textobject(dir_data):
     
 #%%   
 def test_datapool(dir_data):
+    
     from djsurfer.datapool import DataPool
     from djsurfer.lib_interface.text_object import TEXT_OBJECT
     
