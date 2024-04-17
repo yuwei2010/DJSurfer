@@ -45,4 +45,13 @@ def test_datapool(dir_data):
     dp = DataPool(dir_data, TEXT_OBJECT)
     
     assert len(dp.objs) == 2  
+
+#%%
+def test_datainterface():
+    
+    from djsurfer.datainterface import DataInterface
+    from djsurfer.lib_interface.text_object import TEXT_OBJECT
+    
+    assert issubclass(TEXT_OBJECT, DataInterface)
+
     
