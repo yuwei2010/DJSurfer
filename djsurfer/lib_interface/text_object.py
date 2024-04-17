@@ -14,8 +14,12 @@ class TEXT_OBJECT(DataInterface):
     """
 
     def __init__(self, path, name=None, comment=None, delimiter=','):
-        super().__init__(path, name, comment)
+        
+        super().__init__(path=path, name=name, comment=comment)
+        
         self.delimiter = delimiter
+        self.df = self.get_df()
+
         
     def get_df(self):
         """
@@ -25,14 +29,15 @@ class TEXT_OBJECT(DataInterface):
             pandas.DataFrame: The contents of the text file as a DataFrame.
         """
         with open(self.path, 'r') as f:
-            data = f.readlines()
-        
-        df = pd.DataFrame([l.strip().split(self.delimiter) for l in data[1:]], columns=data[0].strip().split(self.delimiter))
+            lines = f.readlines()
+       
+        df = pd.DataFrame([l.strip().split(self.delimiter) for l in lines[1:]], 
+                          columns=lines[0].strip().split(self.delimiter))
         
         return df
         
 
 if __name__ == '__main__':
     
-    obj = TEXT_OBJECT('text.txt')
+    obj = TEXT_OBJECT(r'C:\95_Programming\10_Data_Related\20_Projects\10_Git\20_DJSurfer\tests\demo_data\data0.txt')
 

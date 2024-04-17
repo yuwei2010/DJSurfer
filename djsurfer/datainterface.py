@@ -2,7 +2,7 @@
 from abc import ABC, abstractmethod
 
 #%%
-from abc import ABC, abstractmethod
+
 
 class DataInterface(ABC):
     """
@@ -23,7 +23,7 @@ class DataInterface(ABC):
         self.name = name
         self.comment = comment
         self.config = config
-        self.df = self.get_df()
+
 
     @abstractmethod
     def get_df(self):
@@ -33,4 +33,3 @@ class DataInterface(ABC):
         Returns:
         - df (pandas.DataFrame): The data as a pandas DataFrame.
         """
-        pass
