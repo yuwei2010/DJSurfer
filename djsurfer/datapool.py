@@ -22,10 +22,19 @@ class DataPool(object):
         self.objs = [interface(file) for file in files]
         
     def get_signal(self, name):
+        """
+        Retrieve a signal from the datapool.
+
+        Parameters:
+        - name (str): The name of the signal to retrieve.
+
+        Returns:
+        - out (pd.DataFrame): A DataFrame containing the signal data.
+        """
         dats = []
         
         for obj in self.objs:
-            df = obj.get_df()
+            df = obj.df
             
             if name in obj.columns:
                 dats.append(df[name])
@@ -35,7 +44,7 @@ class DataPool(object):
 
         out = pd.concat(dats, axis=1)
         
-        return  out
+        return out
 
             
         
