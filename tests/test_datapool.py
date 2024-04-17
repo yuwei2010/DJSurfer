@@ -34,7 +34,7 @@ def test_textobject(dir_data):
     path = Path(dir_data) / 'data0.txt'
     obj = TEXT_OBJECT(path)
 
-    assert isinstance(obj.df, pd.DataFrame)
+    assert isinstance(obj.dataframe, pd.DataFrame)
     
 #%%   
 def test_datapool(dir_data):

@@ -24,6 +24,9 @@ class DataInterface(ABC):
         self.comment = comment
         self.config = config
 
+    @property
+    def dataframe(self):
+        return self.get_df()
 
     @abstractmethod
     def get_df(self):

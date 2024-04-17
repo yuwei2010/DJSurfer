@@ -34,7 +34,7 @@ class DataPool(object):
         dats = []
         
         for obj in self.objs:
-            df = obj.df
+            df = obj.dataframe
             
             if name in obj.columns:
                 dats.append(df[name])

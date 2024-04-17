@@ -5,7 +5,7 @@ from djsurfer.datainterface import DataInterface
 #%%
 class TEXT_OBJECT(DataInterface):
     """
-    A class representing a text object.
+    A class representing a text object to access data in a text file.
 
     Args:
         path (str): The path to the text file.
@@ -18,7 +18,7 @@ class TEXT_OBJECT(DataInterface):
         super().__init__(path=path, name=name, comment=comment)
         
         self.delimiter = delimiter
-        self.df = self.get_df()
+
 
         
     def get_df(self):
@@ -39,5 +39,6 @@ class TEXT_OBJECT(DataInterface):
 
 if __name__ == '__main__':
     
-    obj = TEXT_OBJECT(r'C:\95_Programming\10_Data_Related\20_Projects\10_Git\20_DJSurfer\tests\demo_data\data0.txt')
+    from pathlib import Path
+    obj = TEXT_OBJECT(Path(__file__).parent / r'..\..\tests\demo_data\data0.txt')
 
