@@ -105,3 +105,4 @@ ENV/
 .vscode/
 .idea/
 tests/demo_data/
+_site/
