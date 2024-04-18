@@ -15,8 +15,10 @@ class TEXT_OBJECT(DataInterface):
 
     def __init__(self, path, name=None, comment=None, delimiter=','):
         
+        # Initialize the text interface object, passing the path, name, and comment to the base class.
         super().__init__(path=path, name=name, comment=comment)
         
+        # Default delimiter is a comma.
         self.delimiter = delimiter
 
 
