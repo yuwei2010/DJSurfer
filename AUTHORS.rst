@@ -12,7 +12,7 @@ Contributors
 
 1. fypbjchina   Yiping Fu   I'm in the first place ^_^
 2. Sariesy      Ying Shi    Hi everyone!
-
+3. Haiyan-Zhou	Haiyan Zhou	Glad to join!
 
 
 --> not yet, why not be the next?
