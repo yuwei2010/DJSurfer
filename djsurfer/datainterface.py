@@ -2,8 +2,6 @@
 from abc import ABC, abstractmethod
 
 #%%
-
-
 class DataInterface(ABC):
     """
     Abstract base class for data interfaces.
@@ -26,10 +24,17 @@ class DataInterface(ABC):
 
     @property
     def dataframe(self):
+        """
+        Returns the dataframe associated with the data interface.
+        
+        Returns:
+            pandas.DataFrame: The dataframe associated with the data interface.
+        """
         return self.get_df()
 
     @abstractmethod
     def get_df(self):
+        
         """
         Abstract method to get the data as a pandas DataFrame.
 
