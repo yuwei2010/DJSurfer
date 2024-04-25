@@ -3,7 +3,7 @@ import pandas as pd
 from djsurfer.datainterface import DataInterface
 
 #%%
-class TEXT_OBJECT(DataInterface):
+class TextObject(DataInterface):
     """
     A class representing a text object to access data in a text file.
 
@@ -42,5 +42,5 @@ class TEXT_OBJECT(DataInterface):
 if __name__ == '__main__':
     
     from pathlib import Path
-    obj = TEXT_OBJECT(Path(__file__).parent / r'..\..\tests\demo_data\data0.txt')
+    obj = TextObject(Path(__file__).parent / r'..\..\tests\demo_data\data0.txt')
 
