@@ -37,6 +37,15 @@ class TextObject(DataInterface):
                           columns=lines[0].strip().split(self.delimiter))
         
         return df
+    
+    def to_excel(self, path):
+        """
+        Save the text object to an Excel file.
+
+        Args:
+            path (str): The path to save the Excel file.
+        """
+        self.df.to_excel(path, index=False)
         
 
 if __name__ == '__main__':

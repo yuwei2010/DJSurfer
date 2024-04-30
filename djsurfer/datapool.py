@@ -18,8 +18,8 @@ class DataPool(object):
             objs (list): A list of objects created from the files found.
 
         """
-        files = Path(input_item).rglob('*')
-        self.objs = [interface(file) for file in files]
+        files = Path(input_item).rglob('*') # find all files in directory
+        self.objs = [interface(file) for file in files] # create objects from files
         
     def get_signal(self, name):
         """
