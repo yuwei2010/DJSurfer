@@ -29,10 +29,10 @@ def dir_data():
 #%%
 def test_textobject(dir_data):
     
-    from djsurfer.lib_interface.text_object import TEXT_OBJECT
+    from djsurfer.lib_interface.text_object import TextObject
     
     path = Path(dir_data) / 'data0.txt'
-    obj = TEXT_OBJECT(path)
+    obj = TextObject(path)
 
     assert isinstance(obj.dataframe, pd.DataFrame)
     
@@ -40,9 +40,9 @@ def test_textobject(dir_data):
 def test_datapool(dir_data):
     
     from djsurfer.datapool import DataPool
-    from djsurfer.lib_interface.text_object import TEXT_OBJECT
+    from djsurfer.lib_interface.text_object import TextObject
     
-    dp = DataPool(dir_data, TEXT_OBJECT)
+    dp = DataPool(dir_data, interface=TextObject)
     
     assert len(dp.objs) == 2  
 
@@ -50,8 +50,22 @@ def test_datapool(dir_data):
 def test_datainterface():
     
     from djsurfer.datainterface import DataInterface
-    from djsurfer.lib_interface.text_object import TEXT_OBJECT
+    from djsurfer.lib_interface.text_object import TextObject
     
-    assert issubclass(TEXT_OBJECT, DataInterface)
+    assert issubclass(TextObject, DataInterface)
+    
+#%%
 
+def test_datapool_get_signal(dir_data):
+    
+    from djsurfer.datapool import DataPool
+    from djsurfer.lib_interface.text_object import TextObject
+    
+    dp = DataPool(dir_data, interface=TextObject)
+    
+    signal = dp.get_signal('col_5')
+    
+    assert signal.shape == (100, 2)
+
+#%%
     

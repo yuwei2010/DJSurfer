@@ -36,13 +36,14 @@ class DataPool(object):
         for obj in self.objs:
             df = obj.dataframe
             
-            if name in obj.columns:
+            if name in obj.dataframe.columns:
                 dats.append(df[name])
                 
             else:
                 dats.append(pd.Series(np.nan*np.ones(len(self.index)), index=df.index))
 
         out = pd.concat(dats, axis=1)
+        out.columns = [obj.name for obj in self.objs]
         
         return out
 
