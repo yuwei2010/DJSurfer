@@ -4,7 +4,7 @@ from djsurfer.datainterface import DataInterface
 import xml.etree.ElementTree as ET
 
 #%%
-class XmltObject(DataInterface):
+class XmlObject(DataInterface):
     """
     A class representing a XML object to access data in a XML file.
 
@@ -71,5 +71,5 @@ class XmltObject(DataInterface):
 if __name__ == '__main__':
     
     from pathlib import Path
-    obj = XmltObject(Path(__file__).parent / r'..\..\tests\demo_data\data0.txt')
+    obj = XmlObject(Path(__file__).parent / r'..\..\tests\demo_data\data0.txt')
 
