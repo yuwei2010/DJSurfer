@@ -1,2 +1,3 @@
 
 from djsurfer.lib_interface.text_object import TextObject
+from djsurfer.lib_interface.text_object_SY import TextObject_SY
