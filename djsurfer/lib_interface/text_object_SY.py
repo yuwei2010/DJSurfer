@@ -31,7 +31,9 @@ class TextObject_SY(DataInterface):
             file_name_with_extension = os.path.basename(path)
             self.name = file_name_with_extension.split('.')[0]
         
-        # Zylinder measure type
+        self.dirname = os.path.basename(os.path.dirname(path))
+        
+		# Zylinder measure type
         pattern = r'(FR|DR)'
         match = re.search(pattern, self.name)
         if match:
@@ -78,33 +80,28 @@ class TextObject_SY(DataInterface):
         for col in df.columns:
             df[col] = pd.to_numeric(df[col], errors='coerce')
 
+        df['dirname'] = self.dirname
         df['meas_type'] = self.meas_type
         df['Z'] = abs(round(df['Z'], 1))
+        df.set_index(['dirname', 'meas_type', 'Z'], inplace=True)
 
         # calculate measured angle in degree
-        mp_num = df.groupby('Z').size()
-        df['mp_unit_angle'] = df['Z'].map(self.total_angle/mp_num)
-        df['angle_idx'] = df.groupby('Z').cumcount()
-        df['angle'] = df['angle_idx'] * df['mp_unit_angle']
-
-        df.loc[df['angle_idx'] == 0, 'angle'] = 0
-        for grid_angle in [90, 180, 270, 360]:
-            nearst_mp = df.loc[(df.groupby('Z')['angle'].apply(lambda x: abs(x - grid_angle).idxmin())), 'angle_idx']
-            df.loc[df.index.isin(nearst_mp.index), 'angle'] = grid_angle
-
-        # fetch measured data from 0 to 360 degrees
-        begin_index = df.loc[df['angle'] == 0].index.to_list()
-        end_index = df.loc[df['angle'] == 360].index.to_list()
-        subset_dfs = [df.loc[start:end] for start, end in zip(begin_index, end_index)]
-        df_cut = pd.concat(subset_dfs, axis=0)
+        df['mp_num'] = df.groupby(level=[0, 1, 2]).transform('size')
+        df['angle_idx'] = df.groupby(level=[0, 1, 2]).cumcount()
+        df['angle'] = df['angle_idx'] * self.total_angle / df['mp_num']
         
-        # calculate measured radius and deviation from the reference
-        df_cut['radius'] = (df_cut['X'] ** 2 + df_cut['Y'] ** 2) ** 0.5
-        df_cut['dev'] = df_cut['radius'] - self.radius_ref
+        df.set_index(['angle_idx'], append=True, inplace=True)
+        for grid_angle in [0, 90, 180, 270, 360]:
+            nearst_mp = df.groupby(level=[0, 1, 2])['angle'].apply(lambda x: (x - grid_angle).abs().idxmin())
+            df.loc[nearst_mp, 'angle'] = grid_angle
 
-        df_z = df_cut.set_index('Z', inplace=False)
+        # calculate measured radius, theta and deviation from the reference
+        df['radius'] = (df['X'] ** 2 + df['Y'] ** 2) ** 0.5
+        df['theta'] = np.deg2rad(df['angle'])
+        df['dev'] = df['radius'] - self.radius_ref
         
-        return df_z
+        return df    
+
     
     def plot_data(self, path, pos_req = None, z_req = None, color = 'blue'):
         """
@@ -115,14 +112,18 @@ class TextObject_SY(DataInterface):
             pos_req(str): The pre-defined position set to be plotted. Defaults to None.
                           FR = [pos1, pos2n, pos2p, pos3, pos4]
                           DR = [pos5, pos6n, pos6p, pos7, pos8]
-            z_req(list): The Z position list to be plotted. Defaults to None.
+            z_req(tuple): The Z position tuple to be plotted. Defaults to None.
+			color(str): The plot color
         """
         # validate given z-position set to be plotted
         z_set = []
+        flg_plotall = False
+
         if pos_req is None and z_req is None:
-            print("No Z set or position set is given. Please try again.")
+            flg_plotall = True
+            print(f"No Z set or position set is given. All pre-defined position sets will be plotted.")
         elif pos_req is not None and z_req is not None:
-                print("Only one Z set, or one position set is accepted. Please try again.")
+            print("Only one Z set, or one position set is accepted. Please try again.")
         elif pos_req is not None:
             plot_set_name = pos_req
             if (pos_req in self.meas_FR_pos_sets.keys() and self.meas_type == 'FR'):
@@ -130,75 +131,97 @@ class TextObject_SY(DataInterface):
             elif (pos_req in self.meas_DR_pos_sets.keys() and self.meas_type == 'DR'):
                 z_set = self.meas_DR_pos_sets[pos_req]
             else:
-                print("The given position set belongs not to the measure data. Please try again.")
+                print(f"The given position set {pos_req} belongs not to the measure data {self.path}.")
         else:
-            z_full_set = set(self.dataframe.index)
+            z_full_set = set(self.dataframe.index.get_level_values('Z'))
             if all(elem in z_full_set for elem in z_req):
-                z_set = z_req
+                z_set = list(z_req) # shall use deepcopy()
                 plot_set_name = '_'.join(str(x) for x in z_set)
             else:
-                print("The given Z set belongs not to the measure data. Please try again.")
+                print(f"The given Z set belongs not to the measure data {self.path}. Please try again.")
+
+        if flg_plotall:
+            if self.meas_type == 'FR':
+                for key,value in self.meas_FR_pos_sets.items():
+                    self.plot_data_set(outp_path = path, data_set = value, set_name = key, color = color)
+            elif self.meas_type == 'DR':
+                for key,value in self.meas_DR_pos_sets.items():
+                    self.plot_data_set(outp_path = path, data_set = value, set_name = key, color = color)
+
+        elif len(z_set) != 0:
+            self.plot_data_set(outp_path = path, data_set = z_set, set_name = plot_set_name)
+
+
+    def plot_data_set(self, outp_path, data_set, set_name, color = 'blue'):
+        """
+        plot single data set to a png file.
+
+        Args:
+            outp_path (str): The path to save the png file.
+            data_set(list): The data set to be plotted.
+            set_name(str): The name of pre-defined position or specific z set to be plotted.
+			color(str): The plot color
+        """	
+        # fetch dataframe to be plotted
+        df_plot = self.dataframe[self.dataframe.index.get_level_values('Z').isin(data_set)]
+
+        # set output png file path
+        outp_name = self.dirname + '_' + self.name + '_' + set_name
+        outp_filetype = '.png'
+        outp_full_path = outp_path + outp_name + outp_filetype
+
+        # set plot label, color, alpha, axis min/max  
+        z_labels = [f'Z={z}' for z in data_set]
+        n = len(data_set)
+        alphas = np.linspace(0.1, 1, n)
+        color = 'blue'
+
+        ax_min = round(df_plot['radius'].min(), 2) - 0.01
+        ax_max = round(df_plot['radius'].max(), 2) + 0.01
+
+        data_min = round(df_plot['radius'].min(), 3)
+        data_max = round(df_plot['radius'].max(), 3)
+
+        # configure figure and axes
+        fig = plt.figure(figsize=(16, 8), dpi=100)
+        # 在当前的图形窗口上创建一个极坐标子图，并返回子图的引用，位置为2行1列的第1个位置, 开启极坐标
+        ax1 = plt.subplot(211,projection='polar')
+        # 在当前的图形窗口上创建一个极坐标子图，并返回子图的引用，位置为2行1列的第2个位置
+        ax2 = plt.subplot(212)
+
+        ax1.set_rlim(ax_min, ax_max)
+        ax1.set_thetagrids(np.arange(0.0, 360.0, 90.0))
+        ax1.set_rlabel_position(90)
+
+        ax2.set_xlim(0, 360)
+        ax2.set_ylim(ax_min, ax_max)
+        ax2.set_xticks([0, 90, 180, 270, 360])
+        ax2.set_xticklabels(['0°', '90°', '180°', '270°', '360°'])
+        ax2.tick_params(axis='y', which='both', length=6, labelsize=8)
+
+        # plot only measure points with angle within [0,360] degree
+        for z_value, alpha in zip(data_set, alphas):
+            group = df_plot[(df_plot.index.get_level_values('Z') == z_value) & (df_plot['angle'] <= 360)]
+            for idx, row in group.iterrows():
+                radius = row['radius']
+                angle = row['angle']
+                theta = row['theta']
         
-        if len(z_set) != 0:
-            # fetch dataframe to be plotted
-            df_plot = self.dataframe.loc[z_set]
+                ax1.scatter(theta, radius, color=color, alpha=alpha, edgecolors='white', linewidths=0)
+                ax2.scatter(angle, radius, color=color, alpha=alpha, edgecolors='white', linewidths=0)
 
-            # set output png file path
-            outp_name = self.name + '_' + plot_set_name
-            outp_filetype = '.png'
-            outp_full_path = path + outp_name + outp_filetype
+        # 设置图形的标题
+        fig.suptitle(f'Zylinder r = {self.radius_ref} mm, {self.meas_type}, Z = {set_name}\n From {self.dirname}')
 
-            # set plot label, color, alpha, axis min/max  
-            z_labels = [f'Z={z}' for z in z_set]
-            n = len(z_set)
-            alphas = np.linspace(0.1, 1, n)
-            color = 'blue'
+        # 在右上角显示注释
+        plt.figtext(0.9, 0.95, f'r_max = {data_max}\nr_min = {data_min}', ha='right', va='top', bbox=None)
 
-            ax_min = round(df_plot['radius'].min(), 2) - 0.01
-            ax_max = round(df_plot['radius'].max(), 2) + 0.01
+        # 显示图例
+        data_legend = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color, alpha=alpha, markersize=5, label=label) for alpha, label in zip(alphas,z_labels)]
+        plt.legend(handles=data_legend, loc='upper center', bbox_to_anchor=(0.85, 0.9), fontsize=8, bbox_transform=plt.gcf().transFigure)
 
-            data_min = round(df_plot['radius'].min(), 3)
-            data_max = round(df_plot['radius'].max(), 3)
-
-            fig = plt.figure(figsize=(16, 8), dpi=100)# 创建一个新的图形窗口，设置其大小为23x10英寸，分辨率为100dpi
-            # 在当前的图形窗口上创建一个极坐标子图，并返回子图的引用，位置为2行1列的第1个位置, 开启极坐标
-            ax1 = plt.subplot(211,projection='polar')
-            # 在当前的图形窗口上创建一个极坐标子图，并返回子图的引用，位置为2行1列的第2个位置
-            ax2 = plt.subplot(212)
-
-            ax1.set_rlim(ax_min, ax_max)
-            ax1.set_thetagrids(np.arange(0.0, 360.0, 90.0))
-            ax1.set_rlabel_position(90)
-
-            ax2.set_xlim(0, 360)
-            ax2.set_ylim(ax_min, ax_max)
-            ax2.set_xticks([0, 90, 180, 270, 360])
-            ax2.set_xticklabels(['0°', '90°', '180°', '270°', '360°'])
-            ax2.tick_params(axis='y', which='both', length=6, labelsize=8)
-
-            for z_value, alpha in zip(z_set, alphas):
-                group = df_plot[df_plot.index == z_value]
-                # 为每组数据设置深浅不同的蓝色
-                for idx, row in group.iterrows():
-                    radius = row['radius']
-                    angle = row['angle']
-                    theta = np.deg2rad(row['angle'])
-        
-                    ax1.scatter(theta, radius, color=color, alpha=alpha, edgecolors='white', linewidths=0)
-                    ax2.scatter(angle, radius, color=color, alpha=alpha, edgecolors='white', linewidths=0)
-
-            # 设置图形的标题
-            fig.suptitle(f'Zylinder r = {self.radius_ref} mm, {self.meas_type}, Z = {plot_set_name}')
-
-            # 在右上角显示注释
-            plt.figtext(0.9, 0.95, f'r_max = {data_max}\nr_min = {data_min}', ha='right', va='top', bbox=None)
-
-            # 显示图例
-            data_legend = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color, alpha=alpha, markersize=5, label=label) for alpha, label in zip(alphas,z_labels)]
-            plt.legend(handles=data_legend, loc='upper center', bbox_to_anchor=(0.85, 0.9), fontsize=8, bbox_transform=plt.gcf().transFigure)
-
-            plt.savefig(outp_full_path)
-            plt.show()
+        plt.savefig(outp_full_path)
+        plt.show()
 
 if __name__ == '__main__':
     
