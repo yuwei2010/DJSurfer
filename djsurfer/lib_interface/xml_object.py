@@ -1,7 +1,6 @@
 
 import pandas as pd
 from djsurfer.datainterface import DataInterface
-import xml.etree.ElementTree as ET
 
 #%%
 class XmlObject(DataInterface):
@@ -35,6 +34,8 @@ class XmlObject(DataInterface):
         Returns:
             pandas.DataFrame: The contents which are extracted by defined attributes as a DataFrame.
         """
+        import xml.etree.ElementTree as ET
+        
         # Read the XML file and parse the structure.
         tree = ET.parse(self.path)
         root = tree.getroot()
