@@ -20,8 +20,15 @@ class TextObject(DataInterface):
         
         # Default delimiter is a comma.
         self.delimiter = delimiter
-
-
+        
+        
+    def __repr__(self):
+        
+        return f'"{self.name}"@{self.__class__.__name__}'
+    
+    def __str__(self):
+        
+        return f'{self.name}'
         
     def get_df(self):
         """
