@@ -106,3 +106,4 @@ ENV/
 .idea/
 tests/demo_data/
 _site/
+djsurfer/__init__.py.rej
