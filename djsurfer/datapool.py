@@ -38,8 +38,7 @@ class DataPool(object):
             df = obj.dataframe
                       
             if key in obj.dataframe.columns:
-                dats.append(df[key])
-                
+                dats.append(df[key])           
             else:
                 dats.append(pd.Series(np.nan*np.ones(len(df.index)), index=df.index))
 
