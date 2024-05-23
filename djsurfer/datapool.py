@@ -6,7 +6,7 @@ from pathlib import Path
 #%%
 class DataPool(object):
        
-    def __init__(self, input_item, interface, **kwargs):
+    def __init__(self, path, interface, **kwargs):
         """
         Initializes a DataPool object.
 
@@ -19,7 +19,8 @@ class DataPool(object):
 
         """
         pattern = kwargs.pop('pattern', None) or '*'
-        files = Path(input_item).rglob(pattern) # find all files in directory
+        files = list(Path(path).rglob(pattern)) # find all files in directory
+
         self.objs = [interface(file, name=file.stem) for file in files] # create objects from files
         
     def get_signal(self, key):
