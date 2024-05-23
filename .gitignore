@@ -1,108 +1,22 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# celery beat schedule file
-celerybeat-schedule
-
-# SageMath parsed files
-*.sage.py
-
-# dotenv
-.env
-
-# virtualenv
-.venv
-venv/
-ENV/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-
-# IDE settings
-.vscode/
-.idea/
-tests/demo_data/
-_site/
+build/lib/djsurfer/__init__.py
+build/lib/djsurfer/datainterface.py
+build/lib/djsurfer/datapool.py
+build/lib/djsurfer/lib_interface/__init__.py
+build/lib/djsurfer/lib_interface/text_object.py
+dist/djsurfer-0.1.0-py3.11.egg
+djsurfer.egg-info/dependency_links.txt
+djsurfer.egg-info/entry_points.txt
+djsurfer.egg-info/not-zip-safe
+djsurfer.egg-info/PKG-INFO
+djsurfer.egg-info/requires.txt
+djsurfer.egg-info/SOURCES.txt
+djsurfer.egg-info/top_level.txt
+djsurfer/__pycache__/__init__.cpython-311.pyc
+djsurfer/__pycache__/datainterface.cpython-311.pyc
+djsurfer/__pycache__/datapool.cpython-311.pyc
+djsurfer/lib_interface/__pycache__/__init__.cpython-311.pyc
+djsurfer/lib_interface/__pycache__/d97_object.cpython-311.pyc
+djsurfer/lib_interface/__pycache__/text_object.cpython-311.pyc
+djsurfer/lib_interface/__pycache__/text_object_SY.cpython-311.pyc
+tests/__pycache__/test_datapool.cpython-311-pytest-7.4.0.pyc
+tests/__pycache__/test_Datapool_d97obj.cpython-311-pytest-7.4.0.pyc

@@ -5,4 +5,6 @@ __email__ = 'hello@world.de'
 __version__ = '0.1.0'
 
 
-from djsurfer.datapool import DataPool
+from djsurfer.lib_interface.text_object import TextObject
+from djsurfer.lib_interface.text_object_SY import TextObject_SY
+from djsurfer.lib_interface.d97_object import D97_Object

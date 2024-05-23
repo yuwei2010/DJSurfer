@@ -2,11 +2,13 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
+import re
+import os
 
 #%%
 class DataPool(object):
        
-    def __init__(self, path, interface, **kwargs):
+    def __init__(self, input_item, interface, **kwargs):
         """
         Initializes a DataPool object.
 
@@ -18,12 +20,27 @@ class DataPool(object):
             objs (list): A list of objects created from the files found.
 
         """
-        pattern = kwargs.pop('pattern', None) or '*'
-        files = list(Path(path).rglob(pattern)) # find all files in directory
+        pattern = kwargs.pop('pattern', None)
+        file_extension = kwargs.pop('ftype', None)
+        if file_extension is None:        
+            files = Path(input_item).rglob('*') # find all files in directory
+        else:
+            files = []
+            if pattern is not None:
+                regex = re.compile(pattern)
+            else:
+                regex = re.compile('.*')
+            for root, _, filenames in os.walk(input_item):
+                for filename in filenames:
+                    if filename.endswith(file_extension) and regex.search(filename):
+                        files.append(os.path.join(root, filename))
 
-        self.objs = [interface(file, name=file.stem) for file in files] # create objects from files
+        if len(files) != 0:
+            self.objs = [interface(file) for file in files] # create objects from files
+        else:
+            print("No specific file found.")
         
-    def get_signal(self, key):
+    def get_signal(self, name):
         """
         Retrieve a signal from the datapool.
 
@@ -37,33 +54,19 @@ class DataPool(object):
         
         for obj in self.objs:
             df = obj.dataframe
-                      
-            if key in obj.dataframe.columns:
-                dats.append(df[key])           
+            
+            if name in obj.dataframe.columns:
+                dats.append(df[name])
+                
             else:
-                dats.append(pd.Series(np.nan*np.ones(len(df.index)), index=df.index))
+                dats.append(pd.Series(np.nan*np.ones(len(self.index)), index=df.index))
 
         out = pd.concat(dats, axis=1)
         out.columns = [obj.name for obj in self.objs]
         
         return out
-    
-    def to_excel(self, path, key, **kwargs):
-        """
-        Write the data to an Excel file.
 
-        Parameters:
-        - path (str): The path to the Excel file.
-        - key (str): The key to use for the data.
-        """
-        
-        df = self.get_signal(key)           
-        df.to_excel(path, **kwargs)     
-          
-        return self
-        
-
-#%%            
+            
         
         
         
