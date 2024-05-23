@@ -57,7 +57,8 @@ class DataPool(object):
         """
         
         df = self.get_signal(key)           
-        df.to_excel(path, **kwargs)       
+        df.to_excel(path, **kwargs)     
+          
         return self
         
 
