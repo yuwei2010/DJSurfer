@@ -1,5 +1,6 @@
 
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 #%%
 class DataInterface(ABC):
@@ -17,10 +18,19 @@ class DataInterface(ABC):
         - comment (str, optional): Any additional comment or description. Defaults to None.
         - config (dict, optional): Configuration parameters for the data interface. Defaults to None.
         """
-        self.path = path
-        self.name = name
+        self.path = Path(path)
+        self.__name = name
         self.comment = comment
         self.config = config
+
+        
+    @property
+    def name(self):
+        
+        if self.__name is None:
+            self.__name = self.path.stem
+        
+        return self.__name
 
     @property
     def dataframe(self):
