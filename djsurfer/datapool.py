@@ -23,7 +23,7 @@ class DataPool(object):
         pattern = kwargs.pop('pattern', None)
         file_extension = kwargs.pop('ftype', None)
         if file_extension is None:        
-            files = Path(input_item).rglob('*') # find all files in directory
+            files = list(Path(input_item).rglob('*')) # find all files in directory
         else:
             files = []
             if pattern is not None:
