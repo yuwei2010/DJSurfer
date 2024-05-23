@@ -6,4 +6,3 @@ __version__ = '0.1.0'
 
 
 from djsurfer.lib_interface.text_object import TextObject
-from djsurfer.lib_interface.text_object_Blues_01 import Data

@@ -31,6 +31,8 @@ class DataInterface(ABC):
             pandas.DataFrame: The dataframe associated with the data interface.
         """
         return self.get_df()
+    
+    df = dataframe
 
     @abstractmethod
     def get_df(self):
@@ -41,3 +43,4 @@ class DataInterface(ABC):
         Returns:
         - df (pandas.DataFrame): The data as a pandas DataFrame.
         """
+

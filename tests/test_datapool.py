@@ -19,7 +19,7 @@ def dir_data():
     df = pd.DataFrame(np.round(arr0, 4), columns=columns)   
     df.to_csv(dir / 'data0.txt', index=False)
     
-    arr1 = np.random.rand(100, 7)
+    arr1 = np.random.rand(120, 7)
     columns = [f'col_{i}' for i in range(5, 12)]    
     df = pd.DataFrame(np.round(arr1, 4), columns=columns)   
     df.to_csv(dir / 'data1.txt', index=False)    
@@ -65,7 +65,4 @@ def test_datapool_get_signal(dir_data):
     
     signal = dp.get_signal('col_5')
     
-    assert signal.shape == (100, 2)
-
-#%%
-    
+    assert signal.shape == (120, 2)
