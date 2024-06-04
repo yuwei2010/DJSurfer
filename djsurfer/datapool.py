@@ -2,11 +2,13 @@
 import pandas as pd
 import numpy as np
 from pathlib import Path
+import re
+import os
 
 #%%
 class DataPool(object):
        
-    def __init__(self, input_item, interface):
+    def __init__(self, input_item, interface, **kwargs):
         """
         Initializes a DataPool object.
 
@@ -18,8 +20,25 @@ class DataPool(object):
             objs (list): A list of objects created from the files found.
 
         """
-        files = Path(input_item).rglob('*') # find all files in directory
-        self.objs = [interface(file) for file in files] # create objects from files
+        pattern = kwargs.pop('pattern', None)
+        file_extension = kwargs.pop('ftype', None)
+        if file_extension is None:        
+            files = Path(input_item).rglob('*') # find all files in directory
+        else:
+            files = []
+            if pattern is not None:
+                regex = re.compile(pattern)
+            else:
+                regex = re.compile('.*')
+            for root, _, filenames in os.walk(input_item):
+                for filename in filenames:
+                    if filename.endswith(file_extension) and regex.search(filename):
+                        files.append(os.path.join(root, filename))
+
+        if len(files) != 0:
+            self.objs = [interface(file) for file in files] # create objects from files
+        else:
+            print("No specific file found.")
         
     def get_signal(self, name):
         """
